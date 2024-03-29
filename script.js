@@ -12,9 +12,12 @@ const AudioPlay = new Audio('/sons/play.wav')
 const AudioPause = new Audio('/sons/pause.mp3')
 const AudioFinalizando = new Audio('/sons/beep.mp3')
 const iniciarOuPausarBt = document.querySelector('#start-pause span')
+const PlayOuPause = document.querySelector('.app__card-primary-butto-icon')
+const tempoNaTela = document.querySelector('#timer')
+
 musica.loop = true
 
-let tempoDecorridoEmSegundos = 5
+let tempoDecorridoEmSegundos = 1500
 let intervaloId = null
 
 musicafocoinput.addEventListener('change', () => {
@@ -26,21 +29,25 @@ musicafocoinput.addEventListener('change', () => {
 } )
 
 focoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 1500
     alterarContexto('foco')
     focoBt.classList.add('active')
 })
 
 curtoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 300
     alterarContexto('descanso-curto')
     curtoBt.classList.add('active')
 })
 
 longoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 900
     alterarContexto('descanso-longo')
     longoBt.classList.add('active')
 })
 
 function alterarContexto (contexto) {
+    monstrarTempo()
     botoes.forEach(function(contexto){
         contexto.classList.remove('active')
     })
@@ -66,14 +73,14 @@ function alterarContexto (contexto) {
 }
 
 const contagemRegressiva = () => {
-    AudioFinalizando
+    AudioFinalizando.play()
     if (tempoDecorridoEmSegundos <= 0){  
         alert('tempo finalizado')
         zerar()
         return
     }
     tempoDecorridoEmSegundos -= 1
-    console.log('Temporizador: ' + tempoDecorridoEmSegundos)
+    monstrarTempo()
 }
 
 startPauseBt.addEventListener('click', iniciarOuPausar)
@@ -87,10 +94,20 @@ function iniciarOuPausar (){
     AudioPlay.play() 
     intervaloId = setInterval(contagemRegressiva, 1000)
     iniciarOuPausarBt.textContent = 'Pausar'
+    PlayOuPause.setAttribute ('src', `/imagens/pause.png`)
 }
 
 function zerar (){
     clearInterval(intervaloId)
     iniciarOuPausarBt.textContent = 'Começar'
+    PlayOuPause.setAttribute ('src', `/imagens/play_arrow.png`)
     intervaloId = null
 }
+
+function monstrarTempo (){
+    const temp = new Date(tempoDecorridoEmSegundos * 1000)
+    const tempoFormatado = temp.toLocaleTimeString('pt-br', {minute: '2-digit', second: '2-digit'})
+    tempoNaTela.innerHTML = `${tempoFormatado}`
+}
+
+monstrarTempo()
